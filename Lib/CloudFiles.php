@@ -78,7 +78,7 @@ class CloudFiles extends Object {
 	* @param string container name to upload file to. (required)
 	* @param string mime-type name to upload file to. (optional)
 	* @param boolean make the new container public (default false) (optional)
-	* @return mixed false if failure, string public_uri if public, or true if success and not public
+	* @return mixed false if failure, array public_uri and public_ssl_uri if public, or true if success and not public
 	* @example CloudFiles::upload('/home/nwb/image.jpg', 'container_name');
 	* @throws CloudFilesException
 	* @throws IOException
@@ -114,7 +114,10 @@ class CloudFiles extends Object {
 				}
 				$Object->load_from_filename($file_path);
 				if($Container->is_public()){
-					return $Object->public_uri();
+					return array(
+						'public_uri' => $Object->public_uri(),
+						'public_ssl_uri' => $Object->public_ssl_uri()
+					);
 				}
 				return true;
 			}
