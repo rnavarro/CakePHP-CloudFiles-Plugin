@@ -76,6 +76,7 @@ class CloudFiles extends Object {
 	* static method to upload a file to a specific container
 	* @param string full path to file on local machine (required)
 	* @param string container name to upload file to. (required)
+	* @param string custom name for uploaded file (optional)
 	* @param string mime-type name to upload file to. (optional)
 	* @param boolean make the new container public (default false) (optional)
 	* @return mixed false if failure, array public_uri and public_ssl_uri if public, or true if success and not public
@@ -86,7 +87,7 @@ class CloudFiles extends Object {
 	* @throws NoSuchContainerException thrown if no remote Container
 	* @throws InvalidResponseException unexpected response
 	*/
-	public static function upload($file_path = null, $container = null, $mimetype = null, $public = false){
+	public static function upload($file_path = null, $container = null, $filename = null, $mimetype = null, $public = false){
 		if(empty($file_path) || empty($container)){
 			self::error("File path and container required.");
 			return false;
@@ -98,9 +99,12 @@ class CloudFiles extends Object {
 		if(!self::connect()){
 			return false;
 		}
-		
+
 		$Container = self::$Connection->get_container($container);
-		$filename = basename($file_path);
+
+		if(empty($filename)) {
+			$filename = basename($file_path);
+		}
 
 		// upload file to Rackspace
 		if($filename && is_object($Container)){
