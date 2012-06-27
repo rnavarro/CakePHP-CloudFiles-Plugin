@@ -350,11 +350,21 @@ class CloudFiles extends Object {
 	* @throws InvalidResponseException
 	*/
 	protected static function connect(){
-		if(self::$Connection == null && $server = self::$server_to_auth_map[self::getConfig('server')]){
+		if($server = self::$server_to_auth_map[self::getConfig('server')]){
 			self::$Authentication = new CF_Authentication(self::getConfig('username'), self::getConfig('api_key'), null, $server);
 			self::$Authentication->ssl_use_cabundle();
 			self::$Authentication->authenticate();
-			self::$Connection = new CF_Connection(self::$Authentication);
+
+			$hostname = gethostname();
+
+			// Check to see if this is a rackspace node
+			if (stripos($hostname, 'rackspace') === FALSE) {
+				$serviceNet = FALSE;
+			} else {
+				$serviceNet = TRUE;
+			}
+
+			self::$Connection = new CF_Connection(self::$Authentication, $serviceNet);
 		}
 		$retval = !!(self::$Connection);
 		if(!$retval){
