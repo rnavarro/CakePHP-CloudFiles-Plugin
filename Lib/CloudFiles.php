@@ -122,14 +122,17 @@ class CloudFiles extends Object {
 				}
 				$Object->load_from_filename($file_path);
 				if($Container->is_public()){
+					self::$Connection->close();
 					return array(
 						'public_uri' => $Object->public_uri(),
 						'public_ssl_uri' => $Object->public_ssl_uri()
 					);
 				}
+				self::$Connection->close();
 				return true;
 			}
 		}
+		self::$Connection->close();
 		return false;
 	}
 	
